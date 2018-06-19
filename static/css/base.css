@@ -1,0 +1,20 @@
+.wmd-panel{
+	margin: 0px !important;
+}
+
+.comment-reply{
+	display: none;
+}
+
+.read-time{
+	float: right;
+}
+
+.detail-post-delete-btn{
+	float: right;
+}
+
+.detail-post-edit-btn{
+	float: right;
+	padding-right: 15px;
+}

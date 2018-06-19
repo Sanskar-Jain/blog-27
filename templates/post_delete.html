@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+{% load urlify %}
+{% load crispy_forms_tags %}
+
+
+{% block head_title %}
+	{{ block.super }} | Comments
+{% endblock %}
+
+{% block content %}
+	<div class="col-sm-6 col-sm-offset-3">
+		<h1>Confirm Delete</h1>
+
+			<form method="POST" action="">
+				{% csrf_token %}
+				<div class="thumbnail">
+					{% if obj.image %}
+						<img src="{{ obj.image.url }}" class="img-responsive">
+					{% endif %}
+					<div class="caption post-detail-item">
+						<h3>
+							<a href="{{ obj.get_absolute_url }}">
+								{{ obj.title }}
+							</a>
+							<small>
+								{% if obj.draft %}
+								<span style="color:red">
+									Draft
+								</span>
+								{% endif %}
+								{{ obj.publish }}
+							</small>
+						</h3>
+						{% if obj.user.get_full_name %}
+							<p>Author: {{ obj.user.get_full_name }}</p>
+						{% endif %}			
+						{{ obj.get_markdown|truncatechars:80 }}
+						<p><a href="{{ obj.get_absolute_url }}" class="btn btn-primary" role="button">View</a>
+					</div>					
+				</div>
+
+				<p>Are you sure you want to delete this post? This will also delete all its comments.</p>
+				<input type="submit" class="btn btn-danger" value="Delete">
+				<a href="{{ obj.get_absolute_url }}" class="btn btn-default">Cancel</a>
+			</form>
+			<br/>
+		</div>
+
+	</div>
+{% endblock %}

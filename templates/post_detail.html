@@ -1,0 +1,102 @@
+{% extends 'base.html' %}
+{% load urlify %}
+{% load crispy_forms_tags %}
+
+
+{% block head_title %}
+	{{ block.super }} | {{ instance.title }}
+{% endblock %}
+
+{% block post_detail_link %}
+	<li><a href="{{ instance.get_absolute_url }}">{{ instance.title }}</a></li>
+{% endblock %}
+
+{% block content %}
+	{% if instance %}
+		<div class="col-sm-6 col-sm-offset-3">
+			{% if instance.image %}
+				<img src="{{ instance.image.url }}" class="img-responsive">
+			{% endif %}
+			<h1>{{ instance.title }} 
+				<small>
+					{% if instance.draft %}
+					<span style="color:red">
+						Draft
+					</span>
+					{% endif %}
+					{{ instance.publish }}
+				</small>
+			</h1><br />
+			<p>
+				{% if instance.user.get_full_name %}
+					<span>Author: {{ instance.user.get_full_name }}</span>
+				{% endif %}
+
+				<span class="read-time">Read time: {% if instance.read_time <= 1 %}< 1 minute {% else %}{{ instance.read_time }} minutes{% endif %}</span>
+			</p>			
+
+			<p><div class="fb-like" data-href="{{ request.build_absolute_uri }}" data-action="like" data-size="small" data-show-faces="true" data-share="true"></div></p>
+
+			<hr />
+
+			<div class="row">
+				<div class="col-sm-12 post-detail-item">
+					{{ instance.get_markdown }}<br />
+				</div>
+			</div>
+
+			{% if request.user == instance.user %}
+				<div class="row">
+					<span class="detail-post-delete-btn">
+						<a href="{{ instance.get_delete_url }}" class="btn btn-danger">Delete</a>
+					</span>
+					<span class="detail-post-edit-btn">
+						<a href="{{ instance.get_edit_url }}" class="btn btn-primary">Edit</a>
+					</span>
+					
+				</div>
+			{% endif %}
+
+			<hr />
+			<br />
+
+			<div>
+				<p class="lead">Comments</p>
+				<hr />
+				<div style="padding-bottom: 15px">
+					<form method="POST" action="">
+						{% csrf_token %}
+						{{ comment_form|crispy }}
+						<input type="submit" class="btn btn-default" value="Post Comment">
+					</form>
+				</div>
+				{% for comment in comments %}
+					<blockquote>
+						<p>{{ comment.content }}</p>
+						<footer><strong>{{ comment.user.get_full_name }} </strong>| {{ comment.created_on|timesince }} ago |{% if comment.children.count > 0 %} {{ comment.children.count }} Repl{% endif %}{% if comment.children.count > 1 %}ies | {% elif comment.children.count > 0 %}y | {% endif %}<a href="#" class="comment-reply-btn"> Reply</a> | <a href="{{ comment.get_absolute_url }}"> Thread</a>{% if request.user == comment.user or request.user.is_staff %}<a href="{{ comment.get_delete_url }}"> | Delete </a>{% endif %}</footer>
+
+						<div class="comment-reply">
+							{% for child_comment in comment.children %}
+								<blockquote>
+									<p>{{ child_comment.content }}</p>
+									<footer><strong>{{ child_comment.user.get_full_name }} </strong>| {{ child_comment.created_on|timesince }} ago{% if request.user == child_comment.user or request.user.is_staff %}<a href="{{ child_comment.get_delete_url }}"> Delete </a>{% endif %}</footer>
+								</blockquote>
+							{% endfor %}
+
+							<form method="POST" action="">
+								{% csrf_token %}
+								{{ comment_form|crispy }}
+								<input type="hidden" name="parent_id" value="{{ comment.id }}">
+								<input type="submit" class="btn btn-default" value="Reply">
+							</form>
+
+						</div>
+
+					</blockquote>	
+				{% endfor %}
+				<hr />
+			</div>
+
+		</div>
+	{% endif %}
+{% endblock %}
