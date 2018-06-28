@@ -41,7 +41,7 @@ Then you are good to go.
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details
+This project is licensed under the MIT License - see the [LICENSE.md](https://github.com/Sanskar-Jain/blog-27/blob/master/LICENSE) file for details
 
 ## Acknowledgments
 
